@@ -1,0 +1,94 @@
+.item-view-container {
+    margin-top: 15px;
+}
+
+.item-container {
+	display: inline-block;
+	background-color: #222;
+	border: 2px solid #444;
+	padding: 3px 5px 1px 5px;
+	width: 80%;
+	margin-bottom: 0px;
+}
+
+.item-rarity-common {
+	background-color: #222;
+	border: 2px solid #444;
+}
+
+.item-rarity-magical {
+	border: 2px solid rgb(70, 127, 172);
+	background-color: rgb(13, 38, 54);
+}
+
+.item-rarity-rare {
+	border: 2px solid #f5f540;
+	background-color: #33331e;
+}
+
+.item-rarity-epic {
+	border: 2px solid rgb(153, 39, 230);
+	background-color: rgb(38, 26, 48);
+}
+
+.item-attrribute-text {
+	display: inline-block;
+	width: 100%;
+	text-transform: uppercase;
+}
+
+.item-name {
+	float: left;
+	color: gray;
+	text-transform: uppercase;
+}
+
+.item-rarity {
+	float: right;
+	text-transform: uppercase;
+}
+
+.item-level {
+	clear: left;
+	float: left;
+}
+
+.item-hp {
+	float: right;
+}
+
+.item-detail-container {
+	position: relative;
+}
+
+.item-detail-popup {
+	padding: 3px 5px 1px 5px;
+	position: relative;
+	top: 200px;
+	width: 300px;
+	margin: auto auto;
+	height: 200px;
+	animation: item-detail-anim 0.15s linear;
+}
+
+@keyframes item-detail-anim {
+	0% { transform: scale(.8); opacity: 0; }
+	100% { transform: scale(1.0); opacity: 1; }
+}
+
+.item-attributes-container {
+	clear: both;
+	display: block;
+	position: relative;
+	top: 20px;
+}
+
+@keyframes anim-new-item {
+	0% { opacity: 1; }
+	50% { opacity: 0.7; }
+	100% { opacity: 1.0; }
+}
+
+.anim-new-item {
+    animation: anim-new-item 1000ms linear infinite;
+}

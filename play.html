@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="0" />
+
+	<title>Idle Gauntlet</title>
+	
+	<link rel="stylesheet" type="text/css" href="./styles/animations.css?v=3">
+	<link rel="stylesheet" type="text/css" href="./styles/styles.css?v=3">
+	<link rel="stylesheet" type="text/css" href="./styles/stats.css?v=3">
+	<link rel="stylesheet" type="text/css" href="./styles/items.css?v=3">
+	<link rel="stylesheet" type="text/css" href="./styles/gems.css?v=3">
+	<link rel="stylesheet" type="text/css" href="./styles/achievement.css?v=3">
+
+	<link href="https://fonts.googleapis.com/css?family=Hammersmith+One" rel="stylesheet">
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.0.7/howler.core.min.js"></script>
+
+	<script defer src="https://use.fontawesome.com/releases/v5.0.1/js/all.js"></script>
+	
+	<script src="./js/store.modern.min.js"></script>
+	
+	<!--<script src="https://cdn.jsdelivr.net/npm/vue"></script> PROD -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.13/vue.js"></script>
+
+	<script
+	  src="https://code.jquery.com/jquery-3.2.1.min.js"
+	  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+	  crossorigin="anonymous"></script>
+	  
+	<script src="./js/modal.js"></script>
+	<script src="./js/checkbox.js"></script>
+
+	<script src="./js/config.js"></script>
+	<script src="./js/enums.js"></script>
+	<script src="./js/appstate.js"></script>
+	<script src="./js/gems.js"></script>
+
+	<script src="./js/components/item-view.js"></script>
+	<script src="./js/components/item-detail.js"></script>
+	<script src="./js/components/weapon-view.js"></script>
+
+	<script src="./js/services/item-attributes.js"></script>
+	<script src="./js/services/sound-service.js"></script>
+	<script src="./js/services/achievement-service.js"></script>
+
+	<script src="./js/idlegauntlet.js"></script>
+</head>
+
+<body>
+	<div class="app" v-cloak>
+		<header>
+			<nav class='top-menu'>
+				<div class='button button-stats' data-fortab="tab-stats">
+					<i class="fas fa-address-card"></i>
+				</div>
+				<div class='button button-achivements' data-fortab="tab-achievements">
+					<i class="fas fa-trophy"></i>
+				</div>
+				<div class='button button-options' data-fortab="tab-options">
+					<i class="fas fa-cog"></i>
+				</div>
+				<div class='button button-help' data-fortab="tab-help">
+					<i class="fas fa-question-circle"></i>
+				</div>
+			</nav>
+		</header>
+		<main>
+			<!--
+			<div class='achievement-container'>
+				<div class='achievement-title'>ACHEIVEMENT</div>
+				<div class='achievement-name'>WELCOME TO RIFTING</div>
+				<div class='achievement-desc'>Reach level 10.</div>
+			</div>
+			-->
+			
+			<section id="tab-game" class='tab'>
+				<p class='area-label anim-fade-down'>
+					<span id="btn-area-prev" class="no-select">
+						<i class="area-button fas fa-arrow-alt-circle-left"></i>
+					</span>
+					
+					RIFT {{ area }}
+
+					<span id="btn-area-next" class="no-select">
+						<i class="area-button fas fa-arrow-alt-circle-right"></i>
+					</span>
+				</p>
+
+				<p class='season-label anim-fade-down'>SEASON {{ season.toLocaleString() }}</p>
+
+				<div id="chk-auto-continue" class='check-box' data-checked="false">
+					<span class='check-icon no-select'><i class="fas fa-check-circle"></i></span>
+					<span class='uncheck-icon no-select'><i class="fas fa-circle"></i></span>
+					<span class='auto-continue-text no-select'>AUTO CONTINUE</span>
+				</div>
+
+				<p class='label gold-label'>GOLD: <span class='label-val'>{{ Math.round(gold).toLocaleString() }}</span><span class='new-gold' /></p>
+
+				<p class='label mana-label'>MANA CRYSTALS: <span class='label-val'>{{ manaCrystals.toLocaleString() }}</span><span class='new-mana' /></p>
+
+				<p class='label dps-label'>MANA: <span class='label-val'>{{ manaValueLabel }}</span></p>
+
+				<p class='label dps-label'>AVERAGE DPS: <span class='label-val'>{{ averagedps.toLocaleString() }}</span></p>
+
+				<hr />
+
+				<p class='label'>
+					HERO HP: <span class='label-val'>{{ Math.round(heroHp).toLocaleString() + " / " + getHeroMaxHp.toLocaleString() }}</span>
+				</p>
+
+				<div class='progress-line'>
+					<div class="hp-container">
+						<div class="progress-bar gradient-blue">
+							<div id="hero-hp-bar" class="hp-progress"></div>
+						</div>
+					</div>
+				</div>
+
+				<hr />
+
+				<p class='status'>
+					{{ status }}
+				</p>
+				<p><span class='label-val enemy-name'>{{ enemy.toUpperCase() }}</span></p>
+
+				<p class='label' id='enemy-hp'>
+					HP: <span v-bind:class="{ 'red-text': enemydead }" class='label-val'>{{ enemyhp.toLocaleString() }} / {{ enemyMaxHp.toLocaleString() }}</span>
+				</p>
+
+				<div class='progress-line'>
+					<div class="progress-container">
+						<div class="progress-bar gradient-red">
+							<div id="enemy-hp-bar" class="hp-progress"></div>
+						</div>
+					</div>
+					<span class='crit-notify'>CRITICAL!</span>
+				</div>
+
+				<p class='enemies-remain-label'>
+					<span v-if="hasEnemiesRemaining" class='enemies-remain-val'>{{ enemiesRemaining }}</span> 
+					<span v-if="hasEnemiesRemaining">{{ enemiesRemaining > 1 ? "enemies" : "enemy" }} remaining to unlock next rift.</span>
+				</p>
+			</section>
+			<section id="tab-items" class='tab'>
+				<p class="anim-fade-down">ITEMS</p>
+
+				<item-detail v-if="showItemDetail" v-on:clicked="showItemDetail = false"></item-detail>
+				<div class="item-view-container">
+					<weapon-view :weapon="weapon"></weapon-view>
+					<item-view title="head" :item="equipment.head"></item-view>
+					<item-view title="shoulders" :item="equipment.shoulders"></item-view>
+					<item-view title="chest" :item="equipment.chest"></item-view>
+					<item-view title="bracers" :item="equipment.bracers"></item-view>
+					<item-view title="hands" :item="equipment.hands"></item-view>
+					<item-view title="legs" :item="equipment.legs"></item-view>
+					<item-view title="boots" :item="equipment.boots"></item-view>
+				</div>
+			</section>
+			<section id="tab-stats" class='tab'>
+				<p class="anim-fade-down">STATISTICS</p>
+				<hr/>
+
+				<div class='stats-line'><div class='stat-name anim-fade-right'>GOLD:</div><div class='stat-value anim-fade-left'>{{ gold.toLocaleString() }}</div></div>
+				<div class='stats-line'><div class='stat-name anim-fade-right'>MANA CRYSTALS:</div><div class='stat-value anim-fade-left'>{{ manaCrystals.toLocaleString() }}</div></div>
+				<div class='stats-line'><div class='stat-name anim-fade-right'>MANA:</div><div class='stat-value anim-fade-left'>{{ manaValueLabel }}</div></div>
+				<div class='stats-line'><div class='stat-name anim-fade-right'>WEAPON:</div><div class='stat-value anim-fade-left'>{{ weapon.mindamage.toLocaleString() }}-{{ weapon.maxdamage.toLocaleString() }} DMG</div></div>
+				<div class='stats-line'><div class='stat-name anim-fade-right'>AVERAGE DPS:</div><div class='stat-value anim-fade-left'>{{ averagedps.toLocaleString() }}</div></div>
+				<div class='stats-line'><div class='stat-name anim-fade-right'>LOOT CHANCE:</div><div class='stat-value anim-fade-left'>{{ lootchance }}%</div></div>
+				<div class='stats-line'><div class='stat-name anim-fade-right'>CRIT CHANCE:</div><div class='stat-value anim-fade-left'>{{ totalCritChance }}%</div></div>
+				<div class='stats-line'><div class='stat-name anim-fade-right'>HERO DEATHS:</div><div class='stat-value anim-fade-left'>{{ deathCount.toLocaleString() }}</div></div>
+				<div class='stats-line'><div class='stat-name anim-fade-right'>HIGHEST RIFT:</div><div class='stat-value anim-fade-left'>{{ highestArea.toLocaleString() }}</div></div>
+				
+			</section>
+
+			<section id="tab-shop" class='tab'>
+				<p class="anim-fade-down">SHOP</p>
+				<hr/>
+			</section>
+
+			<section id="tab-achievements" class='tab'>
+				<p class="anim-fade-down">ACHIEVEMENTS</p>
+				<hr/>
+
+				<div class='achievements-completion'>
+					<p class='label label-achieves-title anim-fade-down'>COMPLETION: 0 / 100</span></p>
+				</div>
+
+				<div class='achieve-item-container achieve-item-achieved'>
+					<div class='achieve-item-title'>
+						Welcome To Rifting
+					</div>
+					<div class='achieve-item-footer'>
+						<div class='achieve-item-desc'>Reach rift level 10.</div>
+						<div class='achieve-item-date'>03/01/2018</div>
+					</div>
+				</div>
+
+				<div class='achieve-item-container'>
+					<div class='achieve-item-title'>
+						Still Rifting
+					</div>
+					<div class='achieve-item-footer'>
+						<div class='achieve-item-desc'>Reach rift level 10.</div>
+						<div class='achieve-item-date'></div>
+					</div>
+				</div>
+
+				<div class='achieve-item-container'>
+					<div class='achieve-item-title'>
+						Still Rifting
+					</div>
+					<div class='achieve-item-footer'>
+						<div class='achieve-item-desc'>Reach rift level 10.</div>
+						<div class='achieve-item-date'></div>
+					</div>
+				</div>
+
+				<div class='achieve-item-container'>
+					<div class='achieve-item-title'>
+						Still Rifting
+					</div>
+					<div class='achieve-item-footer'>
+						<div class='achieve-item-desc'>Reach rift level 10.</div>
+						<div class='achieve-item-date'></div>
+					</div>
+				</div>
+			</section>
+
+			<section id="tab-gems" class='tab'>
+				<p class="anim-fade-down">GEMS</p>
+				<hr/>
+				
+				<div class='gems-gold-title'>
+					<p class='label gold-label'>MANA: <span class='label-val'>{{ mana.toLocaleString() }}</span></p>
+				</div>
+
+				<p class="label" v-if="gems.length === 0">You haven't found any gems yet.</p>
+
+				<div class="gem-list" v-if="gems.length > 0">
+
+					<div v-if="hasFoundGem(0)" class="gem-container">
+						<div class="gem-icon gem-red anim-fade-up"></div>
+						<div class="gem-name">Apophyllite</div>
+						<div class="gem-description">+{{ getGemValue(0).toFixed(2).toLocaleString() }}% max hp</div>
+						<div class="gem-level">LEVEL {{ getGemLevel(0).toLocaleString() }}</div>
+						<div class="gem-upgrade-cost">
+							<div v-on:click="upgradeGem(0)" class="button" v-bind:class="canAffordGem(0)">UPGRADE ({{ getGemCost(0).toLocaleString() }} MANA)</div>
+						</div>
+					</div>
+
+					<div v-if="hasFoundGem(1)" class="gem-container">
+						<div class="gem-icon gem-gold anim-fade-up"></div>
+						<div class="gem-name">Tiger's Eye Stone</div>
+						<div class="gem-description">+{{ getGemValue(1).toFixed(2).toLocaleString() }}% crit chance</div>
+						<div class="gem-level">LEVEL {{ getGemLevel(1).toLocaleString() }}</div>
+						<div class="gem-upgrade-cost">
+							<div v-on:click="upgradeGem(1)" class="button" v-bind:class="canAffordGem(1)">UPGRADE {{ getGemCost(1).toLocaleString() }} MANA</div>
+						</div>
+					</div>
+
+					<div v-if="hasFoundGem(2)" class="gem-container">
+						<div class="gem-icon gem-purple anim-fade-up"></div>
+						<div class="gem-name">Dumortierite</div>
+						<div class="gem-description">+{{ getGemValue(2) }}% crit damage</div>
+						<div class="gem-level">LEVEL {{ getGemLevel(2).toLocaleString() }}</div>
+						<div class="gem-upgrade-cost">
+							<div v-on:click="upgradeGem(2)" class="button" v-bind:class="canAffordGem(2)">UPGRADE {{ getGemCost(2).toLocaleString() }} MANA</div>
+						</div>
+					</div>
+
+					<div v-if="hasFoundGem(3)" class="gem-container">
+						<div class="gem-icon gem-orange anim-fade-up"></div>
+						<div class="gem-name">Carnelian</div>
+						<div class="gem-description">+{{ Math.round(getGemValue(3)).toLocaleString() }}% gold find</div>
+						<div class="gem-level">LEVEL {{ getGemLevel(3).toLocaleString() }}</div>
+						<div class="gem-upgrade-cost">
+							<div v-on:click="upgradeGem(3)" class="button" v-bind:class="canAffordGem(3)">UPGRADE {{ getGemCost(3).toLocaleString() }} MANA</div>
+						</div>
+					</div>
+
+					<div v-if="hasFoundGem(4)" class="gem-container">
+						<div class="gem-icon gem-cyan anim-fade-up"></div>
+						<div class="gem-name">Sodalite</div>
+						<div class="gem-description">-{{ Math.round(getGemValue(4)).toLocaleString() }}% boss hp</div>
+						<div class="gem-level">LEVEL {{ getGemLevel(4).toLocaleString() }}</div>
+						<div class="gem-upgrade-cost">
+							<div v-on:click="upgradeGem(4)" class="button" v-bind:class="canAffordGem(4)">UPGRADE {{ getGemCost(4).toLocaleString() }} MANA</div>
+						</div>
+					</div>
+
+					<p class="label" v-if="gems.length < 5">There are still more gems yet to be found...</p>
+				</div>
+			</section>
+
+			<section id="tab-options" class='tab'>
+				<p class="anim-fade-down">OPTIONS</p>
+				<hr/>
+				
+				<div class='option-line'>
+					<div id="chk-option-auto-continue" class='check-box' data-checked="false">
+						<span class='check-icon no-select'><i class="fas fa-check-circle"></i></span>
+						<span class='uncheck-icon no-select'><i class="fas fa-circle"></i></span>
+						<span class='no-select'>CANCEL AUTO CONTINUE ON DEATH</span>
+					</div>
+				</div>
+
+				<div class='option-line'>
+					<div id="chk-option-sound-enabled" class='check-box' data-checked="false">
+						<span class='check-icon no-select'><i class="fas fa-check-circle"></i></span>
+						<span class='uncheck-icon no-select'><i class="fas fa-circle"></i></span>
+						<span class='no-select'>SOUND ENABLED</span>
+					</div>
+				</div>
+
+				<div class='option-line'>
+					<div class='btn-reset-game'>
+						<div v-on:click="onResetGameClick" class="button button-text">RESET GAME</div>
+					</div>
+				</div>
+
+			</section>
+			<section id="tab-help" class='tab'>
+				<p class="anim-fade-down">HELP</p>
+				<hr/>
+				<h1 class="help-heading">About</h1>
+				<p class="help-text">
+					This game is in its very early stages of development. Not all features are in, balance hasn't been done, and things change
+					very often. If you do however find any bugs or have ideas, please feel free to contact me at mblore@gmail.com.
+				</p>
+				<h1 class="help-heading">What do I do with my gold?</h1>
+				<p class="help-text">
+					For the moment, gold is only used to upgrade gems. Gems are found as you climb higher in rifts.
+				</p>
+				<h1 class="help-heading">What if I die?</h1>
+				<p class="help-text">
+					You will be placed in the previous rift after a short delay. You can control whether auto continue is turned off
+					at this point in the options tab.
+				</p>
+			</section>
+		</main>
+		<footer>
+			<nav class='top-menu'>
+				<div id="button-main" class='button' data-fortab="tab-game">
+					<i class="fas fa-gavel"></i>
+				</div>
+				<div id="button-items" class='button' data-fortab="tab-items">
+					<i class="fas fa-shield-alt"></i>
+				</div>
+				<div id="button-shop" class='button' data-fortab="tab-shop">
+					<i class="fas fa-dollar-sign"></i>
+				</div>
+				<div id="button-gems" class='button' data-fortab="tab-gems">
+					<i class="fas fa-gem"></i>
+				</div>
+				<div id='btn-home' class='button button-home'>
+					<i class="fas fa-home"></i>
+				</div>
+			</nav>
+		</footer>
+	</div>
+</body>
+</html>

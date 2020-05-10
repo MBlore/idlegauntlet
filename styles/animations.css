@@ -1,0 +1,60 @@
+/* Glowing Animation */
+@keyframes glowing {
+	0% { background-color: #444; box-shadow: 0 0 3px #444; }
+	50% { background-color: #2574A9; box-shadow: 0 0 40px #2574A9; }
+	100% { background-color: #444; box-shadow: 0 0 3px #444; }
+}
+
+.glowing {
+	animation: glowing 1500ms infinite;
+}
+
+/* Fading Text */
+@keyframes anim-fade-down {
+	0% { opacity: 0; top: -15px; }
+	100% { top: 0px; opacity: 1; }
+}
+
+.anim-fade-down {
+    position: relative;
+    animation: anim-fade-down 500ms ease-out;
+}
+
+@keyframes anim-fade-up {
+	0% { opacity: 0; top: 15px; }
+	100% { top: 0px; opacity: 1; }
+}
+
+.anim-fade-up {
+    position: relative;
+    animation: anim-fade-up 500ms ease-out;
+}
+
+@keyframes anim-fade-left {
+	0% { opacity: 0; left: 15px; }
+	100% { left: 0px; opacity: 1; }
+}
+
+.anim-fade-left {
+    position: relative;
+    animation: anim-fade-left 500ms ease-out;
+}
+
+@keyframes anim-fade-right {
+	0% { opacity: 0; left: -15px; }
+	100% { left: 0px; opacity: 1; }
+}
+
+.anim-fade-right {
+    position: relative;
+    animation: anim-fade-right 500ms ease-out;
+}
+
+@keyframes anim-fade {
+	0% { opacity: 0; }
+	100% { opacity: 1; }
+}
+
+.anim-fade {
+    animation: anim-fade 500ms ease-out;
+}
